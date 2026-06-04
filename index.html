@@ -263,7 +263,7 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
         }
     }
 
-    // ============================================================
+        // ============================================================
     // FORGOT PASSWORD — uses Supabase built-in reset
     // ============================================================
     async function handleForgot() {
@@ -276,7 +276,8 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
 
         setLoading(true);
         const { error } = await sb.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin + '/reset-password.html'
+            // FIX: Hardcoded www. ensures the email link goes to the working domain!
+            redirectTo: 'https://zachfire.co.uk'
         });
         setLoading(false);
 
@@ -289,6 +290,7 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
             setMsg('RESET EMAIL SENT.', 'success');
         }
     }
+
 
     // ============================================================
     // UNLOCK SITE
