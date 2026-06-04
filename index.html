@@ -277,7 +277,7 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
         setLoading(true);
         const { error } = await sb.auth.resetPasswordForEmail(email, {
             // FIX: Hardcoded www. ensures the email link goes to the working domain!
-            redirectTo: 'https://www.zachfire.co.uk/reset-password.html'
+            redirectTo: 'https://zachfire.co.uk'
         });
         setLoading(false);
 
