@@ -263,7 +263,7 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
         }
     }
 
-        // ============================================================
+            // ============================================================
     // FORGOT PASSWORD — uses Supabase built-in reset
     // ============================================================
     async function handleForgot() {
@@ -276,7 +276,7 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
 
         setLoading(true);
         const { error } = await sb.auth.resetPasswordForEmail(email, {
-            // FIX: Hardcoded www. ensures the email link goes to the working domain!
+            // FIX 1: Explicitly include www. and the /reset-password.html file target!
             redirectTo: 'https://zachfire.co.uk'
         });
         setLoading(false);
@@ -290,7 +290,6 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
             setMsg('RESET EMAIL SENT.', 'success');
         }
     }
-
 
     // ============================================================
     // UNLOCK SITE
@@ -337,19 +336,23 @@ input:focus { outline: none; border-color: #fff; box-shadow: 0 0 8px rgba(0,255,
         setInterval(draw, 33);
     }
 
-    async function initAuth() {
+       async function initAuth() {
+        // FIX 2: If the URL contains an access token, jump directly out to the reset page!
+        if (window.location.hash.includes('access_token=')) {
+            window.location.href = 'https://zachfire.co.uk' + window.location.hash;
+            return; 
+        }
+
         const { data: { session } } = await sb.auth.getSession();
         if (session) unlockSystem(session.user);
 
         sb.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) unlockSystem(session.user);
+            // Only unlock if it is a real login flow, not an active password recovery step
+            if (event === 'SIGNED_IN' && session && !window.location.hash.includes('access_token=')) {
+                unlockSystem(session.user);
+            }
         });
     }
-
-    window.onload = function() {
-        initMatrix();
-        initAuth();
-    };
 
     // ============================================================
     // MATRIX ANIMATION
